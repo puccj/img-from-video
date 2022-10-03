@@ -10,8 +10,8 @@ int main() {
   std::string path;
   int skip = 5;
 
-  std::cout << "Welcome to img from video, made by puccj\n\n";
-  std::cout << "Insert file path (with extension): ";
+  std::cout << "Welcome to img from video, made by puccj.\n\n";
+  std::cout << "Insert file name (with extension): ";
   std::cin >> path;
   std::cout << "Insert out of many frame to skip for each one drawn: ";
   std::cin >> skip;
