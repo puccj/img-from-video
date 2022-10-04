@@ -8,13 +8,16 @@
 int main() {
 
   std::string path;
-  int skip = 5;
+  int skip;
+  bool contours;
 
   std::cout << "Welcome to img from video, made by puccj.\n\n";
   std::cout << "Insert file name (with extension): ";
   std::cin >> path;
   std::cout << "Insert out of many frame to skip for each one drawn: ";
   std::cin >> skip;
+  std::cout << "Mode: Draw only the contours? (true/false): ";
+  std::cin >> contours;
   
   cv::VideoCapture cap(path);
 
@@ -45,17 +48,26 @@ int main() {
     if (key == 'q' || key == 27)
       break;
 
-    //write the arrow on top of bg image
-    std::vector<cv::Point> whitePixels;
-    cv::findNonZero(frame_threshold, whitePixels);
-
-    for (int i = 0; i < whitePixels.size(); i++)
-    bg.at<cv::Vec3b>(whitePixels[i]) = {0,0,255};
+    if (contours) {
+      std::vector<cv::Mat> whitePixels;
+      cv::findContours(frame_threshold, whitePixels, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+      cv::drawContours(bg, whitePixels, -1, {0,0,255}, 1);
+    }
+    else {
+      //write the arrow on top of bg image
+      std::vector<cv::Point> whitePixels;
+      cv::findNonZero(frame_threshold, whitePixels);
+      for (int i = 0; i < whitePixels.size(); i++)
+        bg.at<cv::Vec3b>(whitePixels[i]) = {0,0,255};
+    }
 
     cv::imshow("Result", bg);
   }
   
-  cv::imwrite(path + '(' + std::to_string(skip) + ")-result.png", bg);
+  if (contours)
+    cv::imwrite(path + '(' + std::to_string(skip) + ")-contours.png", bg);
+  else
+    cv::imwrite(path + '(' + std::to_string(skip) + ")-filled.png", bg);
   std::cout << "The result has been saved. See you!\n";
 
   return 0;
